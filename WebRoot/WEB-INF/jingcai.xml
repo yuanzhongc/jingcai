@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- ========================================================= -->  
+    <!-- 扫描web包，应用Spring的注解 -->
+	<context:component-scan base-package="com.yz.web*.**"/>
+	
+	<!-- ========================================================= -->
+	<!-- 指定请求返回路径 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" 
+		p:prefix="/WEB-INF/pages/"
+		p:suffix=".jsp" />
+
+	<!-- ========================================================= -->
+	<!-- 开始mvc注释  -->	
+	<mvc:annotation-driven>
+	<!-- 解决json返回是乱码的问题 -->
+		<mvc:message-converters register-defaults="true"> 
+	        <bean class="com.yz.core.UTF8StringHttpMessageConverter"/> 
+	    </mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<!-- ========================================================= -->
+	<!-- 开放所有静态资源 -->
+	<mvc:resources location="/" mapping="/**" />
+	
+	<!-- ========================================================= -->
+	<!--  用xml视图的id，作为逻辑视图名返回名称(即返回值要与xml视图名一致 ) -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="1"></property>
+	</bean>
+	
+	<!-- ========================================================= -->
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/main" />
+			<bean class="com.yz.core.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	
+	</mvc:interceptors>
+	<!-- ========================================================= -->
+	<!-- 配置文件上传 -->
+	<bean id="multipartResolver"
+	    class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+	    <property name="uploadTempDir" value="/tmp"></property>
+	    <property name="maxUploadSize" value="10000000"/>
+	    <property name="maxInMemorySize" value="1024"></property>
+	</bean>
+
+</beans>
